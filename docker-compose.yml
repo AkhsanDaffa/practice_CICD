@@ -1,42 +1,47 @@
 services:
+  frontend:
+    build: .
+    container_name: react-app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      #- /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app-network
   api:
-    image: jawaracode/todo-api:latest
-    restart: unless-stopped
+    build: ./api
+    container_name: node-api
     ports:
       - "3100:3000"
-    environment:
-      PGUSER: ${DB_USER}
-      PGPASSWORD: ${DB_PASS}
-      PGDATABASE: ${DB_NAME}
-      PGHOST: db
     depends_on:
       - db
     networks:
       - app-network
-
-  frontend:
-    image: jawaracode/todo-frontend:latest
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    networks:
-      - app-network
-
+    environment:
+      PGUSER: ${DB_USER}
+      PGPASS: ${DB_PASS}
+      PGDATABASE: ${DB_NAME}
+  
   db:
     image: postgres:15-alpine
-    restart: unless-stopped
+    container_name: postgresReact-db
+    restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: unless-stopped
+    container_name: pgadmin-react
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
