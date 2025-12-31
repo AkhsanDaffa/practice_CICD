@@ -49,7 +49,7 @@ function App() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>🚀 Fullstack To-Do List</h1>
+      <h1>Fullstack To-Do List (Live dari VPS) 🚀</h1>
 
       {/* Form Input */}
       <form onSubmit={addTodo} style={{ marginBottom: '20px' }}>
